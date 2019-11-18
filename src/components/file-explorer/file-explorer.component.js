@@ -16,7 +16,6 @@ class FileExplorerComponent extends React.Component {
 
     handleFile(file) {
         if (file.length > 0) {
-
             const _file = file[0];
             let invalidFile = false;
 
@@ -43,9 +42,9 @@ class FileExplorerComponent extends React.Component {
         let nMultiple = 0;
         let nApprox = _bytes / 1024;
         let humanSize = '';
-        
+
         for (nMultiple; nApprox > 1; nApprox /= 1024) {
-            humanSize = `${nApprox.toFixed(3)} ${multiples[nMultiple]}`
+            humanSize = `${nApprox.toFixed(3)} ${multiples[nMultiple]}`;
             nMultiple += 1;
         }
 
@@ -75,7 +74,7 @@ class FileExplorerComponent extends React.Component {
         this.setState({
             isDragActive: false
         });
-        
+
         this.handleFile(files);
     }
 
@@ -87,20 +86,28 @@ class FileExplorerComponent extends React.Component {
     render() {
         let fileInfo = (
             <Label>
-                <Icon name='warning circle' />
+                <Icon name="warning circle" />
                 No file provided
             </Label>
         );
 
         if (this.state.invalidFile) {
-            fileInfo = <Label color='yellow'><Icon name='warning sign' />The file provided is invalid, please select a valid json file.</Label>
+            fileInfo = (
+                <Label color="yellow">
+                    <Icon name="warning sign" />
+                    The file provided is invalid, please select a valid json
+                    file.
+                </Label>
+            );
         }
 
         if (!this.state.invalidFile && this.state.filename !== '') {
             fileInfo = (
                 <Label color="teal">
                     <Icon name="file alternate outline" />
-                    {this.state.filename} - {this.getHumanSize(this.state.filesize)} ({this.state.filesize} bytes)
+                    {this.state.filename} -{' '}
+                    {this.getHumanSize(this.state.filesize)} (
+                    {this.state.filesize} bytes)
                 </Label>
             );
         }
@@ -111,27 +118,35 @@ class FileExplorerComponent extends React.Component {
                     <Segment
                         textAlign="center"
                         secondary
-                        className={`${this.state.isDragActive ? 'drag-active' : ''}`}
-                        onDragEnter={ (e) => this.handleDragEnter(e) }
-                        onDrop={ (e) => this.handleDrop(e) }
-                        onDragOver={ (e) => this.handleDragOver(e) }
+                        className={`${
+                            this.state.isDragActive ? 'drag-active' : ''
+                        }`}
+                        onDragEnter={(e) => this.handleDragEnter(e)}
+                        onDrop={(e) => this.handleDrop(e)}
+                        onDragOver={(e) => this.handleDragOver(e)}
                     >
                         <Header icon>
                             <Icon name="upload" />
                             Drop your parcel's json file here
                             <Divider horizontal>or</Divider>
-                            <input type="file" id="parcelsFile" className="hiddenInput" accept="application/JSON" onChange={ () => this.handleChange() }/>
-                            <label htmlFor="parcelsFile">browse a file from your computer</label>
+                            <input
+                                type="file"
+                                id="parcelsFile"
+                                className="hiddenInput"
+                                accept="application/JSON"
+                                onChange={() => this.handleChange()}
+                            />
+                            <label htmlFor="parcelsFile">
+                                browse a file from your computer
+                            </label>
                         </Header>
                         <Divider horizontal>
-                            <Header as='h5'>
-                                <Icon name='bar chart'/>
+                            <Header as="h5">
+                                <Icon name="bar chart" />
                                 File info
                             </Header>
                         </Divider>
-                        <Header.Content>
-                            {fileInfo}
-                        </Header.Content>
+                        <Header.Content>{fileInfo}</Header.Content>
                     </Segment>
                 </Grid.Column>
             </Grid>

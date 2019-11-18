@@ -3,13 +3,15 @@ import { Container, Header, Grid } from 'semantic-ui-react';
 import FileExplorerComponent from './components/file-explorer/file-explorer.component';
 
 function App() {
-    return(
+    return (
         <Container>
             <Grid padded>
                 <Grid.Row>
                     {/* Title */}
                     <Grid.Column width="16">
-                        <Header dividing as='h1'>Parcel Explorer</Header>
+                        <Header dividing as="h1">
+                            Parcel Explorer
+                        </Header>
                     </Grid.Column>
                     {/* File explorer */}
                     <Grid.Column width="16" padded>
@@ -18,13 +20,9 @@ function App() {
                 </Grid.Row>
                 <Grid.Row divided>
                     {/* Parcel list */}
-                    <Grid.Column width="4">
-                        Parcel list
-                    </Grid.Column>
+                    <Grid.Column width="4">Parcel list</Grid.Column>
                     {/* Parcel details */}
-                    <Grid.Column width="12">
-                        Parcel details
-                    </Grid.Column>
+                    <Grid.Column width="12">Parcel details</Grid.Column>
                 </Grid.Row>
             </Grid>
         </Container>

@@ -1,9 +1,9 @@
-$normalBkg: #2185D0;
-$hoverBkg:  #0D71BB;
-$activeBkg: #1A69A4;
+$normalBkg: #2185d0;
+$hoverBkg: #0d71bb;
+$activeBkg: #1a69a4;
 
 .drag-active {
-    border: 2px dashed $normalBkg!important;
+    border: 2px dashed $normalBkg !important;
 }
 
 .hiddenInput {
@@ -21,17 +21,17 @@ $activeBkg: #1A69A4;
 
     + label {
         background: $normalBkg;
-        border-radius: .28rem;
-        color: #FFF;
+        border-radius: 0.28rem;
+        color: #fff;
         font-size: 1rem;
-        padding: .78em 1.5em;
+        padding: 0.78em 1.5em;
 
         &:hover {
             background: $hoverBkg;
             cursor: pointer;
         }
         &:active {
-            background:$activeBkg;
+            background: $activeBkg;
             position: relative;
             top: 1px;
         }
