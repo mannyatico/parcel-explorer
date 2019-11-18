@@ -3,37 +3,37 @@ $hoverBkg: #0d71bb;
 $activeBkg: #1a69a4;
 
 .drag-active {
-    border: 2px dashed $normalBkg !important;
+  border: 2px dashed $normalBkg !important;
 }
 
 .hiddenInput {
-    position: absolute;
-    height: 1px;
-    width: 1px;
-    overflow: hidden;
-    clip: rect(1px, 1px, 1px, 1px);
+  position: absolute;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
 
-    &:focus + label,
-    &:focus-within + label {
-        background: $hoverBkg;
-        outline: thin dashed;
+  &:focus + label,
+  &:focus-within + label {
+    background: $hoverBkg;
+    outline: thin dashed;
+  }
+
+  + label {
+    background: $normalBkg;
+    border-radius: 0.28rem;
+    color: #fff;
+    font-size: 1rem;
+    padding: 0.78em 1.5em;
+
+    &:hover {
+      background: $hoverBkg;
+      cursor: pointer;
     }
-
-    + label {
-        background: $normalBkg;
-        border-radius: 0.28rem;
-        color: #fff;
-        font-size: 1rem;
-        padding: 0.78em 1.5em;
-
-        &:hover {
-            background: $hoverBkg;
-            cursor: pointer;
-        }
-        &:active {
-            background: $activeBkg;
-            position: relative;
-            top: 1px;
-        }
+    &:active {
+      background: $activeBkg;
+      position: relative;
+      top: 1px;
     }
+  }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Header, Grid } from 'semantic-ui-react';
-import FileExplorerComponent from './components/file-explorer/file-explorer.component';
+import { FileExplorer, ParcelsList, ParcelDetails } from './components';
 
 function App() {
     return (
@@ -15,14 +15,18 @@ function App() {
                     </Grid.Column>
                     {/* File explorer */}
                     <Grid.Column width="16" padded>
-                        <FileExplorerComponent />
+                        <FileExplorer />
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row divided>
                     {/* Parcel list */}
-                    <Grid.Column width="4">Parcel list</Grid.Column>
+                    <Grid.Column width="4">
+                        <ParcelsList />
+                    </Grid.Column>
                     {/* Parcel details */}
-                    <Grid.Column width="12">Parcel details</Grid.Column>
+                    <Grid.Column width="12">
+                        <ParcelDetails />
+                    </Grid.Column>
                 </Grid.Row>
             </Grid>
         </Container>

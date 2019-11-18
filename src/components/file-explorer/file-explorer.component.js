@@ -95,8 +95,7 @@ class FileExplorerComponent extends React.Component {
             fileInfo = (
                 <Label color="yellow">
                     <Icon name="warning sign" />
-                    The file provided is invalid, please select a valid json
-                    file.
+                    The file provided is invalid, please select a valid json file.
                 </Label>
             );
         }
@@ -105,9 +104,7 @@ class FileExplorerComponent extends React.Component {
             fileInfo = (
                 <Label color="teal">
                     <Icon name="file alternate outline" />
-                    {this.state.filename} -{' '}
-                    {this.getHumanSize(this.state.filesize)} (
-                    {this.state.filesize} bytes)
+                    {this.state.filename} - this.getHumanSize(this.state.filesize)} ({this.state.filesize} bytes)
                 </Label>
             );
         }
@@ -118,9 +115,7 @@ class FileExplorerComponent extends React.Component {
                     <Segment
                         textAlign="center"
                         secondary
-                        className={`${
-                            this.state.isDragActive ? 'drag-active' : ''
-                        }`}
+                        className={`${this.state.isDragActive ? 'drag-active' : ''}`}
                         onDragEnter={(e) => this.handleDragEnter(e)}
                         onDrop={(e) => this.handleDrop(e)}
                         onDragOver={(e) => this.handleDragOver(e)}
