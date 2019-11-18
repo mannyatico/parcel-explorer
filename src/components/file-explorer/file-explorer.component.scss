@@ -1,0 +1,39 @@
+$normalBkg: #2185D0;
+$hoverBkg:  #0D71BB;
+$activeBkg: #1A69A4;
+
+.drag-active {
+    border: 2px dashed $normalBkg!important;
+}
+
+.hiddenInput {
+    position: absolute;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+
+    &:focus + label,
+    &:focus-within + label {
+        background: $hoverBkg;
+        outline: thin dashed;
+    }
+
+    + label {
+        background: $normalBkg;
+        border-radius: .28rem;
+        color: #FFF;
+        font-size: 1rem;
+        padding: .78em 1.5em;
+
+        &:hover {
+            background: $hoverBkg;
+            cursor: pointer;
+        }
+        &:active {
+            background:$activeBkg;
+            position: relative;
+            top: 1px;
+        }
+    }
+}
