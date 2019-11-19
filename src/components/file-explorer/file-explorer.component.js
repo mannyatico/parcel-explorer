@@ -1,7 +1,8 @@
 import React from 'react';
 import { Segment, Header, Icon, Grid, Divider, Label } from 'semantic-ui-react';
 import './file-explorer.component.scss';
-import ensure from '../../utils/ensure';
+import PropTypes from 'prop-types';
+import { ensure } from '../../utils';
 
 class FileExplorerComponent extends React.Component {
     constructor(props) {
@@ -15,6 +16,8 @@ class FileExplorerComponent extends React.Component {
     }
 
     handleFile(file) {
+        const _setJsonFile = ensure.function(this.props.setJsonFile);
+
         if (file.length > 0) {
             const _file = file[0];
             let invalidFile = false;
@@ -32,6 +35,8 @@ class FileExplorerComponent extends React.Component {
                     filename: _file.name,
                     filesize: _file.size
                 });
+
+                _setJsonFile(_file);
             }
         }
     }
@@ -104,7 +109,7 @@ class FileExplorerComponent extends React.Component {
             fileInfo = (
                 <Label color="teal">
                     <Icon name="file alternate outline" />
-                    {this.state.filename} - this.getHumanSize(this.state.filesize)} ({this.state.filesize} bytes)
+                    {this.state.filename} - {this.getHumanSize(this.state.filesize)} ({this.state.filesize} bytes)
                 </Label>
             );
         }
@@ -150,3 +155,7 @@ class FileExplorerComponent extends React.Component {
 }
 
 export default FileExplorerComponent;
+
+FileExplorerComponent.propTypes = {
+    setJsonFile: PropTypes.func.isRequired
+};
