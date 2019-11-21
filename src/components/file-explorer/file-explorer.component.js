@@ -127,7 +127,7 @@ class FileExplorerComponent extends React.Component {
                     >
                         <Header icon>
                             <Icon name="upload" />
-                            Drop your parcel's json file here
+                            Drop your parcels' json file here
                             <Divider horizontal>or</Divider>
                             <input
                                 type="file"
