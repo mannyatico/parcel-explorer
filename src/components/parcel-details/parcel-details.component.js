@@ -1,7 +1,8 @@
 import React from 'react';
-import { Label, Segment, Header, Message, Accordion, Icon } from 'semantic-ui-react';
+import { Label, Segment, Header, Message, Accordion, Icon, List, Grid, Popup } from 'semantic-ui-react';
 import { ensure } from '../../utils';
 import PropTypes from 'prop-types';
+import { AnswerFromAPI } from '../index';
 
 class ParcelDetailsComponent extends React.Component {
     constructor(props) {
@@ -20,8 +21,15 @@ class ParcelDetailsComponent extends React.Component {
         return ((width * height * length) / 5000);
     }
 
-    handleClick(e, titleProps) {
-        console.log(titleProps);
+    forceRequestFn(trackingNumber) {
+        const fn = ensure.function(this.props.requestInfoFromAPIFn);
+        trackingNumber = ensure.string(trackingNumber);
+
+        fn(trackingNumber, true);
+    }
+
+    convertLb2Kg(lb) {
+        return lb / 2.205;
     }
 
     render() {
@@ -44,31 +52,112 @@ class ParcelDetailsComponent extends React.Component {
         const volumetricWeight = self.getVolumetricWeight(parcel.width, parcel.height, parcel.length);
         const totalWeight = (
             parcel.weight > volumetricWeight
-                ? parcel.weight
-                : volumetricWeight
+                ? { weight: parcel.weight, units: parcel.massUnit }
+                : { weight: volumetricWeight, units: parcel.distanceUnit }
         );
+        let overweightObj = {
+            isOverweight: undefined,
+            overweight: 0
+        };
+        if (!APIQueryInfo.loading && !APIQueryInfo.error) {
+            const realWeightKg = self.convertLb2Kg(ensure.number(APIQueryInfo.realWeight));
+
+            overweightObj = (
+                realWeightKg > totalWeight.weight
+                    ? { isOverweight: true, overweight: Math.ceil(realWeightKg - totalWeight.weight) }
+                    : { isOverweight: false, overweight: 0 }
+            );
+        }
+
+
+
 
         const segmentColor = (
-            !isParcelSelected || APIQueryInfo.isOverweight === undefined
+            !isParcelSelected || overweightObj.isOverweight === undefined
                 ? 'grey'
                 : (
-                    APIQueryInfo.isOverweight === true
+                    overweightObj.isOverweight === true
                         ? 'red'
                         : 'green'
                 )
         );
         const label = (
-            isParcelSelected && APIQueryInfo.isOverweight === false
+            isParcelSelected && overweightObj.isOverweight === false
                 ? <Label ribbon color="green">No overweight</Label>
                 : ''
         );
 
         let content = "";
 
+        const accordionContent = [{
+            key: 'parcel-details',
+            title: 'More parcel related details',
+            content: {
+                content: (
+                    <List as={Grid}>
+                        <Grid.Row>
+                            <Grid.Column width={8} as={List}>
+                                <List.Item>
+                                    <Icon name="boxes" />
+                                    <List.Content>
+                                        <List.Header>Width</List.Header>
+                                        <List.Description>{parcel.width} {parcel.distanceUnit}</List.Description>
+                                    </List.Content>
+                                </List.Item>
+                                <List.Item>
+                                    <Icon name="boxes" />
+                                    <List.Content>
+                                        <List.Header>Height</List.Header>
+                                        <List.Description>{parcel.height} {parcel.distanceUnit}</List.Description>
+                                    </List.Content>
+                                </List.Item>
+                                <List.Item>
+                                    <Icon name="boxes" />
+                                    <List.Content>
+                                        <List.Header>Length</List.Header>
+                                        <List.Description>{parcel.length} {parcel.distanceUnit}</List.Description>
+                                    </List.Content>
+                                </List.Item>
+                            </Grid.Column>
+                            <Grid.Column width={8} as={List}>
+                                <List.Item>
+                                    <Icon name="boxes" />
+                                    <List.Content>
+                                        <List.Header>Weight</List.Header>
+                                        <List.Description>
+                                            {Math.ceil(parcel.weight)} {parcel.massUnit}
+                                            <Popup trigger={<Icon name="info circle" />}>
+                                                Real: {parcel.weight} {parcel.massUnit}
+                                            </Popup>
+                                        </List.Description>
+                                    </List.Content>
+                                </List.Item>
+                                <List.Item>
+                                    <Icon name="boxes" />
+                                    <List.Content>
+                                        <List.Header>Volumetric Weight</List.Header>
+                                        <List.Description>
+                                            {Math.ceil(volumetricWeight)} {parcel.distanceUnit}
+                                            <Popup trigger={<Icon name="info circle" />}>
+                                                Real: {volumetricWeight} {parcel.distanceUnit}
+                                            </Popup>
+                                        </List.Description>
+                                    </List.Content>
+                                </List.Item>
+                            </Grid.Column>
+                        </Grid.Row>
+                    </List>
+                )
+            }
+        }];
+
         if (isParcelSelected) {
             content = (
                 <Segment.Group raised>
+
+                    {/* Header title */}
                     <Segment color={segmentColor}>
+                        {/* Label when no overweight */}
                         {label}
                         <Header
                             textAlign="center"
@@ -77,18 +166,27 @@ class ParcelDetailsComponent extends React.Component {
                         />
 
                     </Segment>
+                    {/* Answer from API */}
                     <Segment>
-                        <Header as="h3">Parcel details</Header>
+                        <AnswerFromAPI
+                            loading={ensure.boolean(this.props.APIQueryInfo.loading, true)}
+                            error={ensure.boolean(this.props.APIQueryInfo.error, false)}
+                            errorMsg={ensure.string(this.props.APIQueryInfo.errorMsg)}
+                            cached={ensure.boolean(this.props.APIQueryInfo.cached)}
+                            isOverweight={overweightObj.isOverweight}
+                            totalWeight={totalWeight}
+                            realWeight={self.convertLb2Kg(ensure.number(this.props.APIQueryInfo.realWeight))}
+                            realWeightLb={ensure.number(this.props.APIQueryInfo.realWeight)}
+                            overweight={overweightObj.overweight}
+                            parcelID={trackingNumber}
+                            forceRequestFn={this.forceRequestFn.bind(this)}
+                        />
                     </Segment>
-                    <Segment as={Accordion} onClick={this.handleClick.bind(self)} index={0}>
-                        <Accordion.Title active={true}>
-                            <Icon name="dropdown" />
-                            More details
-                        </Accordion.Title>
-                        <Accordion.Content active={true}>
-                            Content
-                        </Accordion.Content>
-                    </Segment>
+                    {/* More info */}
+                    <Segment
+                        as={Accordion}
+                        panels={accordionContent}
+                    />
                 </Segment.Group>
             );
         } else {
@@ -111,5 +209,6 @@ export default ParcelDetailsComponent;
 
 ParcelDetailsComponent.propTypes = {
     selectedParcel: PropTypes.object.isRequired,
-    APIQueryInfo: PropTypes.object.isRequired
+    APIQueryInfo: PropTypes.object.isRequired,
+    requestInfoFromAPIFn: PropTypes.func.isRequired
 };

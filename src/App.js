@@ -3,6 +3,7 @@ import { Container, Header, Grid, Loader, Dimmer, Message, Icon } from 'semantic
 import { FileExplorer, ParcelsList, ParcelDetails } from './components';
 import { ensure, prefixedSequence } from './utils';
 import Ajv from 'ajv';
+import axios from 'axios';
 
 class App extends React.Component {
     constructor(props) {
@@ -14,7 +15,15 @@ class App extends React.Component {
             message: '',
             parcelsList: {},
             selectedParcel: '',
-            APIQueryInfo: {}
+            APIQueryInfo: {
+                loading: false,
+                error: false,
+                errorMsg: '',
+                cached: false,
+                canRetry: false,
+                realWeight: 0
+            },
+            cache: {}
         };
     }
 
@@ -154,8 +163,83 @@ class App extends React.Component {
         parcelID = ensure.string(parcelID);
 
         this.setState({
-            selectedParcel: parcelID
+            selectedParcel: parcelID,
+            APIQueryInfo: {
+                loading: true
+            }
         });
+
+        this.requestInfoFromAPIFn(ensure.string(this.state.parcelsList[parcelID]['tracking_number']));
+    }
+
+    requestInfoFromAPIFn(trackingNumber, force) {
+        force = ensure.boolean(force, false);
+        trackingNumber = ensure.string(trackingNumber);
+
+        const self = this;
+        const reqURL = `http://localhost:3001/parcel/${trackingNumber}`;
+        let response;
+        let defaultAPIQueryInfo = {
+            loading: false,
+            error: false,
+            errorMsg: '',
+            cached: false,
+            canRetry: false,
+            realWeight: 0
+        };
+        const cachedRequest = ensure.object(this.state.cache[trackingNumber]);
+
+        (async () => {
+            try {
+                if (force || Object.entries(cachedRequest).length === 0) {
+                    response = await axios.get(reqURL);
+
+                    if (response.status === 200) {
+                        let { result, resultMsg, canRetry, parcelDetails } = response.data;
+                        let cache = this.state.cache;
+                        parcelDetails = ensure.object(parcelDetails, { shipmentWeight: { weight: 0 } });
+
+                        const updatedAPIQueryInfo = {
+                            error: !(result === 'SUCCESS'),
+                            errorMsg: resultMsg,
+                            canRetry: canRetry,
+                            realWeight: parcelDetails.shipmentWeight.weight
+                        };
+
+                        Object.assign(defaultAPIQueryInfo, updatedAPIQueryInfo);
+                        // Only cache when we can't retry
+                        if (!canRetry) {
+                            Object.assign(cache, { [trackingNumber]: updatedAPIQueryInfo });
+                        }
+
+                        self.setState({
+                            cache
+                        });
+                    } else {
+                        self.setState({
+                            APIQueryInfo: {
+                                error: true,
+                                errorMsg: 'An server related error occurred.'
+                            }
+                        });
+                    }
+                } else {
+                    Object.assign(defaultAPIQueryInfo, {
+                        cached: true,
+                        ...cachedRequest
+                    });
+                }
+            } catch (e) {
+                Object.assign(defaultAPIQueryInfo, {
+                    error: true,
+                    errorMsg: e.message
+                });
+            } finally {
+                self.setState({
+                    APIQueryInfo: defaultAPIQueryInfo
+                })
+            }
+        })();
     }
 
     render() {
@@ -209,11 +293,12 @@ class App extends React.Component {
                             <ParcelDetails
                                 selectedParcel={ensure.object(this.state.parcelsList[this.state.selectedParcel])}
                                 APIQueryInfo={this.state.APIQueryInfo}
+                                requestInfoFromAPIFn={this.requestInfoFromAPIFn.bind(this)}
                             />
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
-            </Container >
+            </Container>
         );
     }
 }
