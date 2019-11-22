@@ -1,68 +1,53 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project receives a json file with an array of parcels and retrieves the appropriate information from the Fedex API.
+
+## Requeriments
+You will need `yarn` installed on your computer to be able to run this project.
+
+## How to run
+
+First exec `yarn` and then when all the dependencies are installed run `yarn server-start`.
 
 ## Available Scripts
 
 In the project directory, you can run:
 
-### `yarn start`
+### `yarn`
+Installs all the dependencies needed to run this project.
 
-Runs the app in the development mode.<br />
+### `yarn server-start`
+
+Runs the app and start the express server needed to perform requests to Fedex's API.
+
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
 
-### `yarn test`
+## Misc
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+This app will reject any file that is not a _json_ file, and also will reject all the _json_ files that don't comply with the expected schema.
 
-### `yarn build`
+### JSON schema used
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+You can see the schema used to validate json files:
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+* It should be an array of objects.
+* Each object should have 3 properties (all of them are required):
+	* `tracking_number`: Type `string`
+	* `carrier`: Type `string`
+	* `parcel`: Type `object`
+* Also `parcel` should comply with the following schema (all properties mentioned are mandatory):
+	* `length`: Type `number`
+	* `width`: Type `number`
+	* `height`: Type `number`
+	* `weight`: Type `number`
+	* `distance_unit`: Type `string` and only accept one of the following values:
+		* `CM`
+		* `cm`
+		* `Cm`
+		* `cM`
+	* `mass_unit`: Type `string` and only accept one of the following values:
+		* `KG`
+		* `kg`
+		* `Kg`
+		* `kG`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+If the schema conditions are not fullfilled, then the json file/object is rejected.
